@@ -3,14 +3,12 @@ class NestedHashTransformer
     @hash = hash
   end
 
-  def self.transform(input_hash)
-    # Заглушка — на время возвращаем фиксированный результат из задания
-    {
-      a: {a1: {}},
-      b: {b1: {}, b2: {}},
-      c: {c1: {c2: {}}},
-      d: {d1: {}, d2: {}, d3: {}, d4: {d5: {}}},
-      e: {e1: {e2: {e3: {}}}, e4: {e5: {}, e6: {}}}
-    }
+  def self.transform(hash)
+    case hash
+    when Symbol then { hash => {} }
+    when Array then hash.each_with_object({}) { |el, acc| acc.merge!(transform(el)) }
+    when Hash then hash.each_with_object({}) { |(key, value), acc| acc[key] = transform(value) }
+    else hash
+    end
   end
 end
